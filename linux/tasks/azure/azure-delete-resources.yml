@@ -1,0 +1,7 @@
+---
+- name: Azure | Delete resource groups (All resources)
+  azure_rm_resourcegroup:
+    name: "{{ resource_group_name }}"
+    location: "{{ resource_group_location }}"
+    force: yes
+    state: absent

@@ -1,0 +1,18 @@
+---
+  - name: Azure | Create Network Security Group that allows SSH
+    azure_rm_securitygroup:
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ network_security_group_name }}"
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 1001
+          direction: Inbound 
+      tags:
+        name: "{{ tag_name }}"
+        owner: "{{ tag_owner }}"
+        product: "{{ tag_product }}"
+        projectName: "{{ tag_projectName }}"
+        environment: "{{ tag_environment }}"        

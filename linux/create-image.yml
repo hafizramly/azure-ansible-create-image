@@ -1,0 +1,105 @@
+---
+- name: Azure | Create Azure Golden Image for Ubuntu Server
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  # Vars You Can Override:
+  # --extra-vars '{ "service_principal_username": "XXXX", "service_principal_password": "XXX", "service_principal_tenant": "XXXX"}'
+  vars_prompt:
+    - name: service_principal_username
+      prompt: "Please provide service principal username to be used. (Ex: 40d61bbc-7az3-43cd-94g3-00a0342eba09)"
+    - name: service_principal_password
+      prompt: "Please provide service principal password."
+      private: yes
+    - name: service_principal_tenant
+      prompt: "Please provide service principal tenant ID. (Ex: 15d1bef2-0a6a-46f9-be4c-023279325e51)"
+  
+  vars_files:
+  # We do not require the service principal credentials here since we already request from user above
+  # - vars/azure/service_principal.yml
+  - vars/azure/credential.yml  
+  - vars/azure/resources.yml
+  - vars/azure/tags.yml
+  - vars/azure/vm-configuration.yml
+  
+  tasks:
+  - include: tasks/azure/azure-login-service-principal.yml
+  - include: tasks/azure/azure-create-resourcegroup.yml
+  - include: tasks/azure/azure-create-virtualnetwork.yml
+  - include: tasks/azure/azure-create-subnet.yml
+  - include: tasks/azure/azure-create-publicip.yml
+  - include: tasks/azure/azure-create-networksecuritygroup.yml
+  - include: tasks/azure/azure-create-networkinterface.yml
+  - include: tasks/azure/azure-create-vm.yml
+
+  - name: Get Public IP
+    azure_rm_publicipaddress_facts:
+     resource_group: "{{ resource_group_name }}"
+     name: "{{ network_public_ip_name }}"
+    register: azure_public_ip
+  
+  - name: Wait for SSH to come up
+    wait_for:
+     host: "{{ item.properties.ipAddress }}"
+     port: 22
+     timeout: 600
+     state: started
+    with_items: "{{ azure_public_ip.ansible_facts.azure_publicipaddresses }}"
+     
+  - name: Adding hosts to inventory file
+    add_host: 
+      hostname: "{{ item.properties.ipAddress }}"
+      groupname: deploy
+    with_items: "{{ azure_public_ip.ansible_facts.azure_publicipaddresses }}"
+    
+- name: Azure | Configure instance
+  hosts: deploy
+  user: ubuntu
+  gather_facts: true
+  become: True
+  become_user: root
+    
+  vars_files:
+  - vars/azure/resources.yml
+  - vars/azure/tags.yml
+  - vars/azure/vm-configuration.yml
+  
+  roles:
+    - { role: apt }
+    - { role: apache }
+
+  post_tasks:
+  - include: tasks/azure/azure-deprovision-vm.yml  
+
+- name: Azure | Create Azure Golden Image for Ubuntu Server
+  hosts: localhost
+  connection: local
+  gather_facts: true    
+
+  vars_files:
+  - vars/azure/resources.yml
+  - vars/azure/tags.yml  
+  
+  tasks:
+  - name: Azure | Deallocate the VM
+    shell: "az vm deallocate --resource-group {{ resource_group_name }} --name {{ resource_group_item_name }}"
+    
+  - name: Azure | Generalize the VM
+    shell: "az vm generalize --resource-group {{ resource_group_name }} --name {{ resource_group_item_name }}"
+    
+  - name: Azure | Capture the VM for imaging
+    azure_rm_image:
+      resource_group: "{{ resource_group_name }}"
+      source: "{{ resource_group_item_name }}"
+      name: "{{ image_name }}"
+      os_type: Linux
+      tags:
+        name: "{{ tag_name }}"
+        owner: "{{ tag_owner }}"
+          
+  # - include: tasks/azure/azure-delete-networkinterface.yml
+  # - include: tasks/azure/azure-delete-networksecuritygroup.yml
+  # - include: tasks/azure/azure-delete-publicip.yml
+  # - include: tasks/azure/azure-delete-subnet.yml
+  # - include: tasks/azure/azure-delete-virtualnetwork.yml

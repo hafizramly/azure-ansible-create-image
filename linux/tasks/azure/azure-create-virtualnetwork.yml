@@ -1,0 +1,12 @@
+---
+- name: Azure | Create virtual network
+  azure_rm_virtualnetwork:
+    name: "{{ virtual_network_name }}"
+    resource_group: "{{ resource_group_name }}"
+    address_prefixes: "{{ virtual_network_prefix }}"
+    tags:
+      name: "{{ tag_name }}"
+      owner: "{{ tag_owner }}"
+      product: "{{ tag_product }}"
+      projectName: "{{ tag_projectName }}"
+      environment: "{{ tag_environment }}"    

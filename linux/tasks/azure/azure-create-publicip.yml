@@ -1,0 +1,12 @@
+---
+- name: Azure | Create public IP address
+  azure_rm_publicipaddress:
+    resource_group: "{{ resource_group_name }}"
+    allocation_method: "{{ network_public_ip_method }}"
+    name: "{{ network_public_ip_name }}"
+    tags:
+      name: "{{ tag_name }}"
+      owner: "{{ tag_owner }}"
+      product: "{{ tag_product }}"
+      projectName: "{{ tag_projectName }}"
+      environment: "{{ tag_environment }}"

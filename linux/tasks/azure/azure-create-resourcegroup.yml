@@ -1,0 +1,11 @@
+---
+- name: Azure | Create resource group
+  azure_rm_resourcegroup:
+    name: "{{ resource_group_name }}"
+    location: "{{ resource_group_location }}"
+    tags:
+      name: "{{ tag_name }}"
+      owner: "{{ tag_owner }}"
+      product: "{{ tag_product }}"
+      projectName: "{{ tag_projectName }}"
+      environment: "{{ tag_environment }}"

@@ -1,0 +1,13 @@
+---
+- name: Azure | Add subnet
+  azure_rm_subnet:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ virtual_network_subnet }}"
+    address_prefix: "{{ virtual_network_subnet_prefix }}"
+    virtual_network: "{{ virtual_network_name }}"
+    tags:
+      name: "{{ tag_name }}"
+      owner: "{{ tag_owner }}"
+      product: "{{ tag_product }}"
+      projectName: "{{ tag_projectName }}"
+      environment: "{{ tag_environment }}"    

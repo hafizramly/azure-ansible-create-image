@@ -1,0 +1,14 @@
+---
+resource_group_name: ansible-imagebuilder-rg
+resource_group_item_name: ansible-imagebuilder-vm
+resource_group_location: southeastasia
+virtual_network_name: ansible-imagebuilder-vnet
+virtual_network_prefix: "10.0.0.0/16"
+virtual_network_subnet: ansible-imagebuilder-subnet
+virtual_network_subnet_prefix: "10.0.1.0/24"
+network_public_ip_name: ansible-imagebuilder-pip
+network_public_ip_method: Static
+network_security_group_name: ansible-imagebuilder-nsg
+network_interface_name: ansible-imagebuilder-nic1
+storage_container_name: ansible-imagebuilder-blobs
+image_name: hafizUbuntuServer

@@ -1,0 +1,38 @@
+---
+# https://docs.ansible.com/ansible/latest/modules/azure_rm_virtualmachine_module.html
+- name: Azure | Create VM
+  azure_rm_virtualmachine:
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ resource_group_item_name }}"
+    network_interfaces: "{{ network_interface_name }}"
+    # vars/credential.yml
+    admin_username: "{{ ssh_admin_username }}"
+    ssh_password_enabled: "{{ ssh_password_enabled }}"
+    ssh_public_keys: 
+      - path: "/home/{{ ssh_admin_username }}/.ssh/authorized_keys"
+        key_data: "{{ ssh_public_keys }}" 
+    # vars/vm-configurations.yml
+    vm_size: "{{ vm_size }}"    
+    image:
+      offer: "{{ image_offer }}"
+      publisher: "{{ image_publisher }}"
+      sku: "{{ image_sku }}"
+      version: "{{ image_version }}"
+    storage_container: "{{ storage_container_name }}"
+    storage_blob: "{{ resource_group_item_name }}-osdisk.vhd"
+    data_disks:
+    - lun: 0
+      disk_size_gb: 1
+      storage_container_name: "{{ storage_container_name }}"
+      storage_blob_name: "{{ resource_group_item_name }}-datadisk1.vhd"
+    - lun: 1
+      disk_size_gb: 2
+      storage_container_name: "{{ storage_container_name }}"
+      storage_blob_name: "{{ resource_group_item_name }}-datadisk2.vhd"
+    append_tags: True
+    tags:
+        name: "{{ tag_name }}"
+        owner: "{{ tag_owner }}"
+        product: "{{ tag_product }}"
+        projectName: "{{ tag_projectName }}"
+        environment: "{{ tag_environment }}"

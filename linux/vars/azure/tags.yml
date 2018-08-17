@@ -1,0 +1,6 @@
+---
+tag_name: ansible-imagebuilder-rg
+tag_owner: mohd_hafiz.ramly@bbraun.com
+tag_product: ansible-imagebuilder
+tag_projectName: azure-governance
+tag_environment: dev

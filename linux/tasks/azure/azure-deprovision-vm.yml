@@ -1,0 +1,7 @@
+---
+- name: Azure | Deprovision the VM
+  shell: /usr/sbin/waagent -deprovision+user -force
+  async: 1
+  poll: 0
+  ignore_errors: True
+  register: deprovision_output

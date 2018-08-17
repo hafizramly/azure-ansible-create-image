@@ -1,0 +1,15 @@
+---
+  - name: Azure | Create virtual network inteface card
+    azure_rm_networkinterface:
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ network_interface_name }}"
+      virtual_network: "{{ virtual_network_name }}"
+      subnet: "{{ virtual_network_subnet }}"
+      public_ip_name: "{{ network_public_ip_name }}"
+      security_group: "{{ network_security_group_name }}"
+      tags:
+        name: "{{ tag_name }}"
+        owner: "{{ tag_owner }}"
+        product: "{{ tag_product }}"
+        projectName: "{{ tag_projectName }}"
+        environment: "{{ tag_environment }}"

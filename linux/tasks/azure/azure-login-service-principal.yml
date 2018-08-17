@@ -1,0 +1,4 @@
+---
+- name: Azure | Login in using service principal
+  local_action: "shell az login --service-principal --username {{ service_principal_username }} --password {{ service_principal_password }} --tenant {{ service_principal_tenant }}"
+  run_once: True
